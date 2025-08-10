@@ -1,0 +1,13 @@
+vendor/
+node_modules/
+.git/
+.gitignore
+README.md
+.env
+.env.local
+.env.*.local
+docker-compose.override.yml
+.dockerignore
+Dockerfile
+.DS_Store
+Thumbs.db

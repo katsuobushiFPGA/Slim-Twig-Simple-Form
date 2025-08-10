@@ -1,0 +1,54 @@
+services:
+  web:
+    image: nginx:latest
+    container_name: slim-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+    networks:
+      - slim-network
+
+  php:
+    build: 
+      context: .
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: slim-php
+    volumes:
+      - ./app:/var/www/html
+      # Composerキャッシュを永続化（オプション）
+      - composer_cache:/var/www/.composer
+    networks:
+      - slim-network
+    environment:
+      - PHP_FPM_USER=www-data
+      - PHP_FPM_GROUP=www-data
+      - COMPOSER_CACHE_DIR=/var/www/.composer
+
+  mysql:
+    image: mysql:8.0
+    container_name: slim-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: slim_app
+      MYSQL_USER: slim_user
+      MYSQL_PASSWORD: slim_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - slim-network
+
+networks:
+  slim-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  composer_cache:
