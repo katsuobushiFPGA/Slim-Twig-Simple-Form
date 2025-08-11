@@ -1,0 +1,77 @@
+{
+  "name": "Slim 4 + Twig Contact Form",
+  "dockerComposeFile": [
+    "../compose.yml",
+    "../compose.database.yml",
+    "docker-compose.devcontainer.yml"
+  ],
+  "service": "php",
+  "workspaceFolder": "/var/www/project",
+  "shutdownAction": "stopCompose",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "dbaeumer.vscode-eslint",
+        "bmewburn.vscode-intelephense-client",
+        "xdebug.php-debug",
+        "formulahendry.auto-rename-tag",
+        "ms-vscode.vscode-json",
+        "eamodio.gitlens",
+        "gruntfuggly.todo-tree",
+        "christian-kohler.path-intellisense",
+        "visualstudioexptteam.vscodeintellicode",
+        "ryanluker.vscode-coverage-gutters",
+        "ms-vscode.makefile-tools",
+        "github.copilot",
+        "github.copilot-chat"
+      ],
+      "settings": {
+        "php.suggest.basic": false,
+        "intelephense.files.maxSize": 5000000,
+        "intelephense.completion.insertUseDeclaration": true,
+        "intelephense.completion.fullyQualifyGlobalConstantsAndFunctions": false,
+        "intelephense.format.enable": true,
+        "intelephense.files.associations": [
+          "*.php",
+          "*.phtml"
+        ],
+        "intelephense.files.exclude": [
+          "**/vendor/**",
+          "**/node_modules/**"
+        ],
+        "files.associations": {
+          "*.twig": "twig"
+        },
+        "emmet.includeLanguages": {
+          "twig": "html"
+        },
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "/bin/bash"
+          }
+        }
+      }
+    }
+  },
+  "forwardPorts": [
+    8080,
+    3306
+  ],
+  "portsAttributes": {
+    "8080": {
+      "label": "Web Server",
+      "onAutoForward": "notify"
+    },
+    "3306": {
+      "label": "MySQL",
+      "onAutoForward": "silent"
+    }
+  },
+  "remoteUser": "www-data"
+}

@@ -1,0 +1,16 @@
+services:
+  php:
+    # DevContainer用の追加設定
+    stdin_open: true
+    tty: true
+    volumes:
+      # プロジェクト全体をマウント（git repository含む）
+      - .:/var/www/project
+    working_dir: /var/www/project
+
+  web:
+    volumes:
+      # DevContainer用: プロジェクト全体をマウント
+      - .:/var/www/project
+      # app/をそのまま/var/www/htmlにもマウント（nginx用）
+      - ./app:/var/www/html

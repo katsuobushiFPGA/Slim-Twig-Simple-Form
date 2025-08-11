@@ -11,7 +11,10 @@ ARG GROUP_ID=1000
 
 # ユーザーIDとグループIDを環境変数として設定（デフォルト値1000）
 RUN usermod -u $USER_ID www-data \
-	&& groupmod -g $GROUP_ID www-data
+    && groupmod -g $GROUP_ID www-data \
+    && mkdir -p /home/www-data \
+    && chown www-data:www-data /home/www-data \
+    && usermod -d /home/www-data www-data
 
 # 作業ディレクトリを設定
 WORKDIR /var/www/html

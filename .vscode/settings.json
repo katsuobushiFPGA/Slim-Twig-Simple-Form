@@ -1,0 +1,36 @@
+{
+    "php.suggest.basic": false,
+    "files.associations": {
+        "*.twig": "twig",
+        "*.html.twig": "twig",
+        "*.yml": "yaml",
+        "*.yaml": "yaml",
+        "Dockerfile": "dockerfile",
+        "compose.*.yml": "yaml"
+    },
+    "emmet.includeLanguages": {
+        "twig": "html"
+    },
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "terminal.integrated.profiles.linux": {
+        "bash": {
+            "path": "/bin/bash"
+        }
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "files.exclude": {
+        "**/vendor": true,
+        "**/node_modules": true,
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true
+    },
+    "search.exclude": {
+        "**/vendor": true,
+        "**/node_modules": true,
+        "**/.git": true
+    }
+}

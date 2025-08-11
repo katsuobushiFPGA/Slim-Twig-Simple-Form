@@ -1,3 +1,41 @@
+# 環境設定
 *.env
-app/vendor/*
+.env.*
+
+# PHP
+app/vendor/
+app/composer.lock
 *.cache
+
+# VS Code
+.vscode/settings.local.json
+
+# DevContainer
+.devcontainer/.env
+
+# ログ
+*.log
+logs/
+
+# テンポラリファイル
+*.tmp
+*.temp
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Docker
+.docker/
+
+# テストカバレッジ
+coverage/
+*.coverage
