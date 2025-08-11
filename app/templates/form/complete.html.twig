@@ -1,0 +1,59 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+    <div style="text-align: center;">
+        <div style="background-color: #d4edda; padding: 20px; border-radius: 5px; margin-bottom: 30px;">
+            <h2 style="color: #155724; margin: 0;">ステップ 3/3: 送信完了</h2>
+        </div>
+        
+        <div style="margin-bottom: 30px;">
+            <h2 style="color: #28a745;">お問い合わせありがとうございます！</h2>
+            <p style="color: #666; margin-bottom: 20px; font-size: 16px;">
+                お問い合わせを受け付けました。<br>
+                内容を確認の上、3営業日以内にご連絡いたします。
+            </p>
+        </div>
+        
+        {% if data %}
+        <div style="max-width: 500px; margin: 0 auto; background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 30px; text-align: left;">
+            <h3 style="margin-top: 0; color: #333; text-align: center;">送信内容</h3>
+            
+            <div style="margin-bottom: 15px;">
+                <strong style="color: #555;">お名前:</strong>
+                <div style="background-color: white; padding: 8px; margin-top: 5px; border-radius: 3px;">
+                    {{ data.name }}
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <strong style="color: #555;">メールアドレス:</strong>
+                <div style="background-color: white; padding: 8px; margin-top: 5px; border-radius: 3px;">
+                    {{ data.email }}
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 0;">
+                <strong style="color: #555;">お問い合わせ内容:</strong>
+                <div style="background-color: white; padding: 8px; margin-top: 5px; border-radius: 3px; white-space: pre-wrap;">{{ data.message }}</div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div style="margin-top: 30px;">
+            <a href="/form/input" style="background-color: #007bff; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; margin-right: 10px; display: inline-block;">
+                新しいお問い合わせ
+            </a>
+            <a href="/" style="background-color: #6c757d; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                ホームに戻る
+            </a>
+        </div>
+        
+        <div style="margin-top: 30px; padding: 15px; background-color: #e7f3ff; border-radius: 5px; color: #0066cc;">
+            <p style="margin: 0; font-size: 14px;">
+                <strong>※ ご注意</strong><br>
+                返信メールが迷惑メールフォルダに分類される場合がございます。<br>
+                しばらく経っても返信がない場合は、迷惑メールフォルダもご確認ください。
+            </p>
+        </div>
+    </div>
+{% endblock %}

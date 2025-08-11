@@ -1,0 +1,56 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+    <div style="text-align: center; margin-bottom: 30px;">
+        <div style="background-color: #e7f3ff; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+            <h3 style="color: #0066cc; margin: 0;">ステップ 1/3: お問い合わせ内容の入力</h3>
+        </div>
+        <p style="color: #666; font-size: 16px;">ご質問やお問い合わせがございましたら、下記フォームよりお気軽にお問い合わせください。</p>
+    </div>
+    
+    {% if errors %}
+        <div style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+            <h4 style="margin-top: 0;">入力エラー</h4>
+            <ul style="margin-bottom: 0;">
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    
+    <form method="POST" action="/form/confirm" style="max-width: 500px; margin: 0 auto;">
+        <div style="margin-bottom: 20px;">
+            <label for="name" style="display: block; margin-bottom: 5px; font-weight: bold;">お名前 <span style="color: red;">*</span></label>
+            <input type="text" id="name" name="name" required 
+                   value="{{ data.name ?? '' }}"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 14px;">
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label for="email" style="display: block; margin-bottom: 5px; font-weight: bold;">メールアドレス <span style="color: red;">*</span></label>
+            <input type="email" id="email" name="email" required 
+                   value="{{ data.email ?? '' }}"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 14px;"
+                   placeholder="example@email.com">
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label for="message" style="display: block; margin-bottom: 5px; font-weight: bold;">お問い合わせ内容 <span style="color: red;">*</span></label>
+            <textarea id="message" name="message" rows="6" required 
+                      style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; resize: vertical; font-size: 14px;"
+                      placeholder="お問い合わせ内容をご記入ください">{{ data.message ?? '' }}</textarea>
+        </div>
+        
+        <div style="text-align: center;">
+            <button type="submit" 
+                    style="background-color: #007bff; color: white; padding: 15px 40px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;">
+                確認画面へ進む
+            </button>
+        </div>
+        
+        <div style="margin-top: 20px; text-align: center; color: #666; font-size: 12px;">
+            <span style="color: red;">*</span> は必須項目です
+        </div>
+    </form>
+{% endblock %}
