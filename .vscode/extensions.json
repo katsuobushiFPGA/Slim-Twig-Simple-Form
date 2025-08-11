@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "bmewburn.vscode-intelephense-client",
+        "xdebug.php-pack",
+        "mehedidracula.php-namespace-resolver",
+        "neilbrayfield.php-docblocker",
+        "editorconfig.editorconfig"
+    ]
+}
