@@ -1,11 +1,15 @@
 # PHP 8.4 with FPM
 FROM php:8.4-fpm
 
-# ユーザーIDとグループIDを環境変数として設定（デフォルト値1000）
-ARG USER_ID=$USER_ID
-ARG GROUP_ID=$GROUP_ID
+# 環境変数の設定
+ARG APP_ENV=production
+ARG INSTALL_DEV_DEPS=false
+ARG USER_ID=1000
+ARG GROUP_ID=1000
 
-# 新しいグループとユーザーを作成
+# ビルド時にのみ使用（実行時環境変数はcompose.ymlで設定）
+
+# ユーザーIDとグループIDを環境変数として設定（デフォルト値1000）
 RUN usermod -u $USER_ID www-data \
 	&& groupmod -g $GROUP_ID www-data
 
