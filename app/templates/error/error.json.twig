@@ -1,0 +1,8 @@
+{
+  "error": {
+    "status": {{ status_code }},
+    "title": {{ status_text|json_encode|raw }},
+    "message": {{ message|json_encode|raw }}{% if details %},
+    "details": {{ details|json_encode|raw }}{% endif %}
+  }
+}

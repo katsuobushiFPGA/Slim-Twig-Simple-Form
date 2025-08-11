@@ -11,6 +11,8 @@ use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 use Slim\Csrf\Guard;
 use App\Middleware\CsrfMiddleware;
+use App\Error\HttpErrorRenderer;
+use App\Error\GeneralErrorRenderer;
 
 // Slimアプリケーションの作成
 $app = AppFactory::create();
@@ -32,7 +34,11 @@ $app->add(TwigMiddleware::create($app, $twig));
 // CSRFミドルウェアの追加（フォーム送信ルートに適用）
 $app->add($csrfGuard);
 
-// ミドルウェアの追加
-$app->addErrorMiddleware(true, true, true);
+// Error Middleware 設定
+$errorMiddleware = $app->addErrorMiddleware(true, true, true);
+$httpHandler = new HttpErrorRenderer($twig, true);
+$generalHandler = new GeneralErrorRenderer($twig, true);
+$errorMiddleware->setDefaultErrorHandler($generalHandler);
+$errorMiddleware->setErrorHandler(\Slim\Exception\HttpException::class, $httpHandler);
 
 $app->run();
