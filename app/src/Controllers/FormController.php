@@ -8,7 +8,7 @@ use App\Validators\ContactFormValidator;
 
 class FormController
 {
-    public function index(Request $request, Response $response)
+    public function index(Request $request, Response $response): Response
     {
         $view = Twig::fromRequest($request);
         return $view->render($response, 'index.html.twig', [
@@ -17,7 +17,7 @@ class FormController
         ]); 
     }
 
-    public function input(Request $request, Response $response)
+    public function input(Request $request, Response $response): Response
     {
         $view = Twig::fromRequest($request);
         $data = [];
@@ -33,10 +33,15 @@ class FormController
         ]);
     }
 
-    public function confirm(Request $request, Response $response)
+    public function confirm(Request $request, Response $response): Response
     {
         $view = Twig::fromRequest($request);
         $data = $request->getParsedBody();
+        
+        // データが配列でない場合は空配列で初期化
+        if (!is_array($data)) {
+            $data = [];
+        }
         
         // バリデーション
         $validator = new ContactFormValidator();
@@ -59,7 +64,7 @@ class FormController
         ]);
     }
 
-    public function complete(Request $request, Response $response)
+    public function complete(Request $request, Response $response): Response
     {
         $view = Twig::fromRequest($request);
         

@@ -6,4 +6,5 @@ parameters:
     excludePaths:
         - vendor
     ignoreErrors:
-        # 必要に応じてエラーを無視する設定を追加
+        # Slim Framework ルート定義の型問題を無視
+        - '#Parameter \#2 \$callable of method Slim\\Routing\\RouteCollectorProxy.*expects.*array.*given#'

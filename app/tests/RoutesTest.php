@@ -83,6 +83,7 @@ class RoutesTest extends BaseTestCase
 
     /**
      * @dataProvider routeDataProvider
+     * @param array<string, mixed> $data
      */
     public function testSpecificRoutes(string $method, string $path, array $data, int $expectedStatus, string $description): void
     {
@@ -96,6 +97,9 @@ class RoutesTest extends BaseTestCase
         );
     }
 
+    /**
+     * @return array<string, array{string, string, array<string, mixed>, int, string}>
+     */
     public static function routeDataProvider(): array
     {
         return [

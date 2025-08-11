@@ -7,11 +7,13 @@ use Psr\Http\Message\ResponseInterface;
 use Slim\App;
 use Slim\Factory\AppFactory;
 use Slim\Psr7\Factory\ServerRequestFactory;
+use Psr\Container\ContainerInterface;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 
 abstract class BaseTestCase extends TestCase
 {
+    /** @var App<ContainerInterface|null> */
     protected App $app;
 
     protected function setUp(): void
@@ -32,6 +34,8 @@ abstract class BaseTestCase extends TestCase
 
     /**
      * リクエストを作成するヘルパーメソッド
+     * 
+     * @param array<string, mixed> $data
      */
     protected function createRequest(string $method, string $uri, array $data = []): ServerRequestInterface
     {

@@ -6,8 +6,8 @@ class ContactFormValidator
     /**
      * お問い合わせフォームのバリデーション
      * 
-     * @param array $data フォームデータ
-     * @return array エラーメッセージの配列
+     * @param array<string, mixed> $data フォームデータ
+     * @return array<string, string> エラーメッセージの配列
      */
     public function validate(array $data): array
     {
@@ -31,8 +31,8 @@ class ContactFormValidator
     /**
      * データの前後の空白を除去
      * 
-     * @param array $data
-     * @return array
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
      */
     private function trimData(array $data): array
     {
@@ -45,7 +45,7 @@ class ContactFormValidator
      * 名前のバリデーション
      * 
      * @param string $name
-     * @return array
+     * @return array<string>
      */
     private function validateName(string $name): array
     {
@@ -64,7 +64,7 @@ class ContactFormValidator
      * メールアドレスのバリデーション
      * 
      * @param string $email
-     * @return array
+     * @return array<string>
      */
     private function validateEmail(string $email): array
     {
@@ -85,7 +85,7 @@ class ContactFormValidator
      * メッセージのバリデーション
      * 
      * @param string $message
-     * @return array
+     * @return array<string>
      */
     private function validateMessage(string $message): array
     {
@@ -105,8 +105,8 @@ class ContactFormValidator
     /**
      * トリム済みデータを取得
      * 
-     * @param array $data
-     * @return array
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
      */
     public function getTrimmedData(array $data): array
     {

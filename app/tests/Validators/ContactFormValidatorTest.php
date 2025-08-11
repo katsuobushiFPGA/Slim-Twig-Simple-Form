@@ -212,6 +212,9 @@ class ContactFormValidatorTest extends TestCase
         $this->assertEmpty($emailErrors);
     }
 
+    /**
+     * @return array<int, array<string>>
+     */
     public static function validEmailProvider(): array
     {
         return [
