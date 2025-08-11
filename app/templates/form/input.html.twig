@@ -20,6 +20,10 @@
     {% endif %}
     
     <form method="POST" action="/form/confirm" style="max-width: 500px; margin: 0 auto;">
+        {# CSRF Protection #}
+        <input type="hidden" name="csrf_name" value="{{ csrf.tokenName }}">
+        <input type="hidden" name="csrf_value" value="{{ csrf.tokenValue }}">
+        
         <div style="margin-bottom: 20px;">
             <label for="name" style="display: block; margin-bottom: 5px; font-weight: bold;">お名前 <span style="color: red;">*</span></label>
             <input type="text" id="name" name="name" required 

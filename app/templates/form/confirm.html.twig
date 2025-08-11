@@ -32,8 +32,11 @@
             </div>
         </div>
         
-        <div style="text-align: center;">
+                <div style="text-align: center;">
             <form method="POST" action="/form/complete" style="display: inline-block; margin-right: 10px;">
+                {# CSRF Protection #}
+                <input type="hidden" name="csrf_name" value="{{ csrf.tokenName }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf.tokenValue }}">
                 {% for key, value in data %}
                     <input type="hidden" name="{{ key }}" value="{{ value }}">
                 {% endfor %}
@@ -44,6 +47,9 @@
             </form>
             
             <form method="POST" action="/form/input" style="display: inline-block;">
+                {# CSRF Protection #}
+                <input type="hidden" name="csrf_name" value="{{ csrf.tokenName }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf.tokenValue }}">
                 {% for key, value in data %}
                     <input type="hidden" name="{{ key }}" value="{{ value }}">
                 {% endfor %}
