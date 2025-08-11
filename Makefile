@@ -1,5 +1,5 @@
 # Makefileでテスト実行を簡単に
-.PHONY: help up down down-volume install test php-shell logs status
+.PHONY: help up down down-volume install test phpstan php-shell logs status
 
 # デフォルトターゲット
 help:
@@ -9,6 +9,7 @@ help:
 	@echo "  make down-volume - アプリケーションを停止（ボリューム削除）"
 	@echo "  make install    - Composer依存関係をインストール"
 	@echo "  make test       - PHPUnitテストを実行"
+	@echo "  make phpstan    - PHPStan静的解析を実行"
 	@echo "  make php-shell  - PHPコンテナに入る"
 	@echo "  make logs       - ログを表示"
 	@echo "  make status     - 現在の状態を確認"
@@ -32,6 +33,10 @@ install:
 # テスト実行
 test:
 	docker compose exec php vendor/bin/phpunit
+
+# PHPStan静的解析実行
+phpstan:
+	docker compose exec php vendor/bin/phpstan analyse
 
 # PHPコンテナに入る
 php-shell:
