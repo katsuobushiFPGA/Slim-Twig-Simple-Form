@@ -28,12 +28,14 @@ class CsrfMiddleware implements MiddlewareInterface
         } catch (\RuntimeException $e) {
             // CSRF検証エラーの場合、403 Forbiddenを返す
             $response = new Response();
-            $response->getBody()->write(
-                json_encode([
-                    'error' => 'CSRF token validation failed',
-                    'message' => 'セキュリティトークンが無効です。ページを再読み込みしてから再試行してください。'
-                ])
-            );
+            $payload = json_encode([
+                'error' => 'CSRF token validation failed',
+                'message' => 'セキュリティトークンが無効です。ページを再読み込みしてから再試行してください。'
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            if ($payload === false) {
+                $payload = '{"error":"CSRF token validation failed"}';
+            }
+            $response->getBody()->write($payload);
 
             return $response
                 ->withHeader('Content-Type', 'application/json')

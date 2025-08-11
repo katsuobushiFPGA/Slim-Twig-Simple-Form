@@ -13,13 +13,15 @@ class FormController
 {
     /**
      * CSRFトークンをリクエストデータから除去する
-     * 
-     * @param array<string,mixed> $data リクエストデータ
+     *
+     * @param mixed $data リクエストデータ（配列でない場合は空配列として扱う）
      * @return array<string,mixed> CSRFトークンを除去したデータ
      */
-    private function filterCsrfTokens(array $data): array
+    private function filterCsrfTokens(mixed $data): array
     {
-        // CSRFトークンキーを除去（Slim CSRFライブラリのデフォルトキー）
+        if (!is_array($data)) {
+            return [];
+        }
         unset($data['csrf_name'], $data['csrf_value']);
         return $data;
     }
@@ -122,8 +124,6 @@ class FormController
 
         if ($request->getMethod() === 'POST') {
             $rawData = $request->getParsedBody();
-
-            // CSRFトークンを除去したデータを取得
             $data = $this->filterCsrfTokens($rawData);
 
             // ここで実際の処理（メール送信など）を行う
