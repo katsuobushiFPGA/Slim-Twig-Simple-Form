@@ -65,58 +65,51 @@ open http://localhost:8080
 
 ### Docker Compose設定ファイル
 
-プロジェクトは以下の分離されたCompose設定ファイルを使用します：
+プロジェクトは以下のCompose設定ファイルを使用します：
 
-- `compose.base.yml` - PHPとNginxの基本設定
+- `compose.yml` - PHPとNginxの基本設定
 - `compose.database.yml` - MySQL設定
-- `compose.development.yml` - 開発環境用オーバーライド
-- `compose.production.yml` - 本番環境用オーバーライド
+- `compose.mailpit.yml` - メール送信テスト用Mailpit設定
 
 ### 環境設定
 
-#### 開発環境
+#### 基本的な起動
 
 ```bash
-# .envファイルを開発用設定にコピー
-cp .env.example .env
+# 外部ネットワークを作成（初回のみ）
+docker network create slim-network
 
-# または手動で.envファイルを作成
-cat > .env << EOF
-USER_ID=1002
-GROUP_ID=1002
+# 基本サービス（PHP + Nginx）のみ起動
+docker compose up --build -d
+
+# データベースも使用する場合
+docker compose -f compose.yml -f compose.database.yml up --build -d
+
+# メールテスト機能も使用する場合
+docker compose -f compose.yml -f compose.database.yml -f compose.mailpit.yml up --build -d
+```
+
+#### 環境変数（オプション）
+
+以下の環境変数で動作をカスタマイズできます：
+
+```bash
+# .envファイル例
+USER_ID=1000
+GROUP_ID=1000
 APP_ENV=development
-COMPOSE_FILE=compose.base.yml:compose.database.yml:compose.development.yml
 INSTALL_DEV_DEPS=true
-RUN_TESTS=true
 MYSQL_ROOT_PASSWORD=rootpassword
 MYSQL_DATABASE=slim_app
 MYSQL_USER=slim_user
 MYSQL_PASSWORD=slim_password
-EOF
-```
-
-#### 本番環境
-
-```bash
-# .envファイルを本番用設定にコピー  
-cp .env.production .env
-
-# または手動で.envファイルを作成
-cat > .env << EOF
-USER_ID=1002
-GROUP_ID=1002
-APP_ENV=production
-COMPOSE_FILE=compose.base.yml:compose.production.yml
-INSTALL_DEV_DEPS=false
-RUN_TESTS=false
-EOF
 ```
 
 ### インストールと起動
 
 1. プロジェクトディレクトリに移動
 ```bash
-cd /home/kbushi/workspace/slim-twig-simple-form
+cd /var/www/project
 ```
 
 2. 外部ネットワークを作成（初回のみ）
@@ -126,7 +119,11 @@ docker network create slim-network
 
 3. Dockerコンテナをビルドして起動
 ```bash
+# 基本サービスのみ
 docker compose up --build -d
+
+# データベースも含める場合
+docker compose -f compose.yml -f compose.database.yml up --build -d
 ```
 
 4. ブラウザで以下のURLにアクセス
@@ -136,40 +133,32 @@ http://localhost:8080
 
 ### 環境の切り替え
 
-#### 開発環境に切り替え
+#### 開発環境（開発用依存関係含む）
 ```bash
 # 現在のコンテナを停止
 docker compose down
 
-# 開発環境設定をコピー
-cp .env.example .env  # または開発用設定を作成
-
-# vendor削除（依存関係を正しく再インストールするため）
-rm -rf app/vendor
-
-# 開発環境で起動
-docker compose up --build -d
+# APP_ENV=development で起動（開発用依存関係をインストール）
+APP_ENV=development INSTALL_DEV_DEPS=true docker compose up --build -d
 ```
 
-#### 本番環境に切り替え
+#### 本番環境（最小構成）
 ```bash
 # 現在のコンテナを停止
 docker compose down
 
-# 本番環境設定をコピー
-cp .env.production .env
-
-# vendor削除（開発依存関係を除外するため）
+# vendor削除（本番用に最適化）
 rm -rf app/vendor
 
-# 本番環境で起動
-docker compose up --build -d
+# APP_ENV=production で起動
+APP_ENV=production INSTALL_DEV_DEPS=false docker compose up --build -d
 ```
 
 ### 利用可能なサービス
 
 - **Webアプリケーション**: http://localhost:8080
-- **MySQL**: localhost:3306
+- **MySQL**: localhost:3306 （compose.database.ymlを使用時）
+- **Mailpit（メールテスト）**: http://localhost:8025 （compose.mailpit.ymlを使用時）
 
 ### MySQL接続情報
 
@@ -203,12 +192,14 @@ docker compose up --build -d
 │   ├── templates/             # Twigテンプレート
 │   │   ├── base.html.twig     # ベーステンプレート
 │   │   ├── index.html.twig    # ホームページ
-│   │   ├── form.html.twig     # フォーム入力
-│   │   └── result.html.twig   # 完了画面
+│   │   └── form/              # フォーム関連テンプレート
+│   │       ├── input.html.twig    # フォーム入力
+│   │       ├── confirm.html.twig  # 確認画面
+│   │       └── complete.html.twig # 完了画面
 │   ├── tests/                 # テストスイート（39テスト）
 │   │   ├── Controllers/       # コントローラーテスト
 │   │   ├── Validators/        # バリデーションテスト
-│   │   ├── Integration/       # 統合テスト
+│   │   ├── IntegrationTest.php # 統合テスト
 │   │   └── RoutesTest.php     # ルートテスト
 │   ├── public/
 │   │   └── index.php          # エントリーポイント
@@ -220,6 +211,7 @@ docker compose up --build -d
 │       └── default.conf       # Nginx設定
 ├── compose.yml                # Docker基本設定
 ├── compose.database.yml       # MySQL設定
+├── compose.mailpit.yml        # Mailpit設定
 ├── Dockerfile                 # PHP-FPMイメージ
 ├── Makefile                   # 開発コマンド自動化
 └── README.md                  # このファイル
@@ -242,49 +234,58 @@ docker compose up --build -d
 #### 1. Makefileを使用（推奨）
 
 ```bash
-# ヘルプ表示
-make help
-
 # アプリケーション起動
 make up
 
-# 依存関係インストール
+# アプリケーション停止
+make down
+
+# アプリケーション停止（ボリューム削除）
+make down-volume
+
+# Composer依存関係のインストール
 make install
 
 # テスト実行
 make test
 
-# 詳細出力でテスト実行
-make test-verbose
+# PHPStan静的解析
+make phpstan
 
-# 特定のテストクラスを実行
-make test-class
+# PHPコンテナに入る
+make php-shell
 
-# テストカバレッジ
-make test-coverage
+# ログ表示
+make logs
+
+# 状態確認
+make status
 ```
 
 #### 2. Docker Composeを直接使用
 
 ```bash
-# 通常のテスト実行
-docker compose run --rm test
+# 基本サービスでテスト実行
+docker compose exec php vendor/bin/phpunit
+
+# データベースも含めてテスト実行（複数ファイル指定）
+docker compose -f compose.yml -f compose.database.yml exec php vendor/bin/phpunit
 
 # 詳細出力
-docker compose run --rm test vendor/bin/phpunit --verbose
+docker compose exec php vendor/bin/phpunit --verbose
 
 # 特定のテストファイルを実行
-docker compose run --rm test vendor/bin/phpunit tests/Controllers/FormControllerTest.php
+docker compose exec php vendor/bin/phpunit tests/Controllers/FormControllerTest.php
 
 # テストカバレッジ
-docker compose run --rm test vendor/bin/phpunit --coverage-text
+docker compose exec php vendor/bin/phpunit --coverage-text
 ```
 
 #### 3. PHPコンテナ内でテスト実行
 
 ```bash
 # PHPコンテナに入る
-make shell
+make php-shell
 # または
 docker compose exec php bash
 
@@ -301,7 +302,8 @@ tests/
 │   └── FormControllerTest.php         # コントローラーテスト
 ├── IntegrationTest.php                # 統合テスト
 ├── RoutesTest.php                     # ルートテスト
-└── ValidationTest.php                 # バリデーションテスト
+└── Validators/
+    └── ContactFormValidatorTest.php   # バリデーションテスト
 ```
 
 ### テストの種類
@@ -351,11 +353,19 @@ docker compose exec mysql mysql -u slim_user -p slim_app
 ## 停止
 
 ```bash
+# 基本サービスのみ停止
 docker compose down
+
+# 複数ファイルで起動した場合も同様に停止
+docker compose -f compose.yml -f compose.database.yml down
 ```
 
 ## 完全削除（ボリュームも含む）
 
 ```bash
+# 基本サービス
 docker compose down -v
+
+# 複数ファイルの場合
+docker compose -f compose.yml -f compose.database.yml down -v
 ```
