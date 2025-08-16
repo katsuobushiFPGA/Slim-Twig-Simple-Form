@@ -13,8 +13,10 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       - slim-network
+
+  php:
     depends_on:
-      - php
+      - mysql
 
 volumes:
   mysql_data:
@@ -22,4 +24,3 @@ volumes:
 
 networks:
   slim-network:
-    external: true
