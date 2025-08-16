@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Database\DatabaseProvider;
 use App\Error\GeneralErrorRenderer;
 use App\Error\HttpErrorRenderer;
 use App\Logging\LoggerProvider;
 use App\Middleware\RequestContextMiddleware;
+use App\Repository\RepositoryProvider;
 use DI\Container;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -19,17 +21,24 @@ use Slim\Views\TwigMiddleware;
  * アプリケーション初期化（コンテナ / ルート / ミドルウェア / エラーハンドラ）
  * public/index.php から require され Slim\App を返す。
  */
+
 return (function (): App {
     $container = new Container();
     AppFactory::setContainer($container);
     $app = AppFactory::create();
     // 設定読み込み
-    /** @var array{env:string,debug:bool,paths:array{log:string,templates:string}} $config */
+    /** @var array{env:string,debug:bool,paths:array{log:string,templates:string},database:array<string,mixed>} $config */
     $config = require __DIR__ . '/../config/config.php';
     $container->set('config', $config);
 
     // ログ設定 + リクエストID付与
     LoggerProvider::register($container, $config['paths']['log']);
+
+    // データベース接続設定
+    DatabaseProvider::register($container, $config);
+
+    // リポジトリ設定
+    RepositoryProvider::register($container);
     $app->add(new RequestContextMiddleware());
 
     // CSRF Guard 設定（失敗時セキュリティログ）

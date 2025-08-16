@@ -5,6 +5,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.4",
+        "illuminate/database": "^12.24",
         "monolog/monolog": "^3.7",
         "php-di/php-di": "^7.0",
         "psr/http-server-middleware": "^1.0",
