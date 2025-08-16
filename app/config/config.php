@@ -15,7 +15,7 @@ return [
     ],
     'database' => [
         'host' => getenv('DB_HOST') ?: 'mysql',
-        'port' => (int)(getenv('DB_PORT') ?: 3306),
+        'port' => (int) (getenv('DB_PORT') ?: 3306),
         'dbname' => getenv('DB_DATABASE') ?: getenv('MYSQL_DATABASE') ?: 'slim_app',
         'username' => getenv('DB_USERNAME') ?: getenv('MYSQL_USER') ?: 'slim_user',
         'password' => getenv('DB_PASSWORD') ?: getenv('MYSQL_PASSWORD') ?: 'slim_password',

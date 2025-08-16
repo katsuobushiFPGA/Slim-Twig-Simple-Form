@@ -9,15 +9,17 @@ use App\Validators\ContactFormValidator;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
-use Slim\Views\Twig;
 use RuntimeException;
+use Slim\Views\Twig;
 
 class FormController
 {
     public function __construct(
         private ContactRepository $contactRepository,
         private LoggerInterface $logger
-    ) {}
+    ) {
+    }
+
     /**
      * CSRFトークンをリクエストデータから除去する.
      *

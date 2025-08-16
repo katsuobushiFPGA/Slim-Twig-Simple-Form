@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use App\Controllers\ControllerProvider;
+use App\Database\DatabaseProvider;
+use App\Logging\LoggerProvider;
+use App\Repository\RepositoryProvider;
+use DI\Container;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -31,6 +36,21 @@ abstract class BaseTestCase extends TestCase
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+
+        // DIコンテナのセットアップ
+        $container = new Container();
+        AppFactory::setContainer($container);
+
+        // 設定読み込み
+        /** @var array{env:string,debug:bool,paths:array{log:string,templates:string},database:array<string,mixed>} $config */
+        $config = require __DIR__ . '/../config/config.php';
+        $container->set('config', $config);
+
+        // テスト用の依存関係を登録
+        LoggerProvider::register($container, $config['paths']['log']);
+        DatabaseProvider::register($container, $config);
+        RepositoryProvider::register($container);
+        ControllerProvider::register($container);
 
         // Slimアプリケーションのセットアップ
         $this->app = AppFactory::create();
@@ -61,7 +81,7 @@ abstract class BaseTestCase extends TestCase
         $routes($this->app);
 
         // Twigビューの設定
-        $twig = Twig::create(__DIR__ . '/../templates', ['cache' => false]);
+        $twig = Twig::create($config['paths']['templates'], ['cache' => false]);
 
         // Twig側ではGuardインスタンスではなく、リクエスト属性(csrf_name, csrf_value)を利用する実装に変更したためGlobal追加は不要
 

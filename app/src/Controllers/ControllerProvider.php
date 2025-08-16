@@ -6,7 +6,6 @@ namespace App\Controllers;
 
 use App\Repository\ContactRepository;
 use DI\Container;
-use Psr\Log\LoggerInterface;
 
 /**
  * コントローラー関連のサービスをDIコンテナに登録するプロバイダー.

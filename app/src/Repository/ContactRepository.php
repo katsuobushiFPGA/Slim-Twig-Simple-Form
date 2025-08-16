@@ -15,7 +15,8 @@ class ContactRepository
 {
     public function __construct(
         private Capsule $capsule
-    ) {}
+    ) {
+    }
 
     /**
      * お問い合わせを保存.
