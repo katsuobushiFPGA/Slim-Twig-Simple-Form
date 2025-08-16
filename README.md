@@ -1,6 +1,6 @@
 # Slim + Twig Simple Form
 
-PHP 8.4、Slim Framework 4、Twigテンプレートエンジンを使用したシンプルなフォームアプリケーションです。
+PHP 8.4、Slim Framework 4、Twigテンプレートエンジンを使用したモダンな3ステップお問い合わせフォームアプリケーション。CSRF保護、包括的バリデーション、構造化ログ、コードスタイル統一などエンタープライズ品質の機能を実装。
 
 ## 🚀 開発方法
 
@@ -47,14 +47,24 @@ open http://localhost:8080
 
 ## 技術スタック
 
-- **PHP 8.4** - 最新のPHP機能
-- **Slim Framework 4** - 軽量Webフレームワーク
-- **Twig Template Engine** - 安全なテンプレート
-- **Nginx** - Webサーバー
-- **MySQL 8.4** - データベース
-- **Docker & Docker Compose** - コンテナ化
-- **PHPUnit 11.5** - テストフレームワーク（39テスト）
-- **PHPStan 2.0** - 静的解析（レベル8）
+### コア
+- **PHP 8.4** - 最新のPHP機能（declare strict_types, union types等）
+- **Slim Framework 4** - 軽量Webフレームワーク + ミドルウェアスタック
+- **Twig 3** - 安全なテンプレートエンジン（XSS保護）
+- **PHP-DI 7** - 依存性注入コンテナ
+
+### セキュリティ & 品質
+- **slim/csrf** - CSRF保護（Guard + セッション）
+- **Monolog 3** - 構造化ログ（app/security/mail チャンネル、request_id 追跡）
+- **PHPUnit 11.5** - テストフレームワーク（42テスト、統合・単体・コントローラー）
+- **PHPStan 2.0** - 静的解析（レベル8、型安全性）
+- **PHP-CS-Fixer 3.86** - コード品質（PSR-2/12 + 拡張ルール）
+
+### インフラ & 開発環境
+- **Nginx** - Webサーバー（PHP-FPM連携）
+- **MySQL 8.4** - データベース（オプション）
+- **Docker & Docker Compose** - コンテナ化開発環境
+- **VS Code DevContainer** - 統合開発環境（Xdebug、Intelephense、推奨拡張機能）
 
 ## セットアップ
 
@@ -169,149 +179,175 @@ APP_ENV=production INSTALL_DEV_DEPS=false docker compose up --build -d
 - Password: slim_password
 - Root Password: rootpassword
 
-## プロジェクト構造
+## アーキテクチャ
 
+### ディレクトリ構造
 ```
 ├── .devcontainer/              # VS Code DevContainer設定
-│   ├── devcontainer.json      # DevContainer主設定
-│   ├── docker-compose.devcontainer.yml  # DevContainer用Docker設定
-│   ├── bashrc                 # カスタムbash設定
-│   └── README.md              # DevContainer詳細ドキュメント
-├── .vscode/                   # VS Code設定
-│   ├── extensions.json        # 推奨拡張機能
-│   ├── launch.json            # デバッグ設定
-│   ├── settings.json          # エディター設定
-│   └── tasks.json             # タスク定義
+├── .vscode/                   # VS Code設定（デバッグ、タスク、推奨拡張）
 ├── app/                       # アプリケーションソース
+│   ├── config/
+│   │   └── config.php         # 環境別設定（ログパス、デバッグフラグ等）
 │   ├── src/
+│   │   ├── bootstrap.php      # アプリ初期化（DI、ミドルウェア、エラーハンドラ）
+│   │   ├── routes.php         # ルート定義（callable配列構文）
 │   │   ├── Controllers/
-│   │   │   └── FormController.php     # 3ステップフォーム制御
+│   │   │   └── FormController.php     # 3ステップフォーム制御（入力→確認→完了）
 │   │   ├── Validators/
-│   │   │   └── ContactFormValidator.php  # バリデーションロジック
-│   │   └── routes.php         # ルート定義
-│   ├── templates/             # Twigテンプレート
-│   │   ├── base.html.twig     # ベーステンプレート
-│   │   ├── index.html.twig    # ホームページ
+│   │   │   └── ContactFormValidator.php  # 日本語バリデーション（全角対応）
+│   │   ├── Middleware/
+│   │   │   ├── RequestContextMiddleware.php  # request_id 付与
+│   │   │   └── CsrfMiddleware.php       # CSRF失敗ハンドラ
+│   │   ├── Logging/
+│   │   │   └── LoggerProvider.php      # Monolog 設定（3チャンネル）
+│   │   └── Error/
+│   │       ├── HttpErrorRenderer.php   # HTTP例外レンダラ（HTML/JSON）
+│   │       └── GeneralErrorRenderer.php # 汎用エラーレンダラ
+│   ├── templates/             # Twig テンプレート
+│   │   ├── base.html.twig     # ベーステンプレート（Bootstrap CDN）
+│   │   ├── error/             # エラーページ（HTML/JSON）
 │   │   └── form/              # フォーム関連テンプレート
-│   │       ├── input.html.twig    # フォーム入力
-│   │       ├── confirm.html.twig  # 確認画面
-│   │       └── complete.html.twig # 完了画面
-│   ├── tests/                 # テストスイート（39テスト）
+│   ├── tests/                 # テストスイート（42テスト）
+│   │   ├── BaseTestCase.php   # 共通テスト基盤（CSRF自動付与）
 │   │   ├── Controllers/       # コントローラーテスト
 │   │   ├── Validators/        # バリデーションテスト
-│   │   ├── IntegrationTest.php # 統合テスト
-│   │   └── RoutesTest.php     # ルートテスト
+│   │   ├── Middleware/        # ミドルウェアテスト
+│   │   ├── IntegrationTest.php # エンドツーエンド統合テスト
+│   │   └── RoutesTest.php     # ルート存在確認
+│   ├── logs/                  # ログファイル（app.log, security.log, mail.log）
 │   ├── public/
-│   │   └── index.php          # エントリーポイント
-│   ├── composer.json          # PHP依存関係
-│   └── phpstan.neon           # 静的解析設定（レベル8）
-├── docker/
-│   ├── entrypoint.sh          # 初期化スクリプト
-│   └── nginx/
-│       └── default.conf       # Nginx設定
-├── compose.yml                # Docker基本設定
-├── compose.database.yml       # MySQL設定
-├── compose.mailpit.yml        # Mailpit設定
-├── Dockerfile                 # PHP-FPMイメージ
-├── Makefile                   # 開発コマンド自動化
-└── README.md                  # このファイル
+│   │   └── index.php          # 最小エントリーポイント（bootstrap呼び出しのみ）
+│   └── .php-cs-fixer.php      # コードスタイル設定
+└── Makefile                   # 開発コマンド（Docker/DevContainer自動切替）
 ```
+
+### 設計パターン
+
+**ブートストラップ分離**: `public/index.php` は最小化し、`src/bootstrap.php` で初期化処理を集約  
+**Provider パターン**: `LoggerProvider` でMonolog設定を外部化  
+**設定配列**: `config/config.php` で環境依存値を一元管理  
+**ミドルウェアスタック**: RequestContext → CSRF → Twig → Routes → Error の順序  
+**エラー統一**: HTTP例外とGeneralエラーで HTML/JSON レスポンスを content negotiation
 
 ## 機能
 
-- **ホームページ** (`/`): アプリケーションの概要
-- **お問い合わせフォーム** (3ステップ):
-  - **入力画面** (`/form/input`): お問い合わせ内容の入力
-  - **確認画面** (`/form/confirm`): 入力内容の確認
-  - **完了画面** (`/form/complete`): 送信完了
+### フォームワークフロー（3ステップ）
+- **ホームページ** (`/`): プロジェクト紹介
+- **入力画面** (`/form/input`): お問い合わせ内容の入力
+- **確認画面** (`/form/confirm`): 入力内容の確認（バリデーション後）
+- **完了画面** (`/form/complete`): 送信完了通知
+
+### セキュリティ機能
+- **CSRF保護**: slim/csrf による二重送信攻撃防止（セッション + hiddenフィールド）
+- **XSS対策**: Twig自動エスケープ + 入力値サニタイズ
+- **バリデーション**: 日本語対応の包括的入力検証（空値・形式・文字数制限）
+- **エラーハンドリング**: 統一エラーレスポンス（HTML/JSON content negotiation）
+
+### 観測性・運用
+- **構造化ログ**: Monolog 3チャンネル（app/security/mail）
+- **リクエスト追跡**: request_id による分散トレース対応  
+- **静的解析**: PHPStan レベル8 で型安全性確保
+- **コード品質**: PHP-CS-Fixer による PSR-2/12 準拠 + 拡張ルール
+- **包括的テスト**: 42テスト（単体・統合・エンドツーエンド）
 
 ## テスト
 
 このプロジェクトではPHPUnitを使用したテストが含まれています。
 
-### テスト実行方法
+## 開発ワークフロー
 
-#### 1. Makefileを使用（推奨）
+### Makeコマンド（推奨）
+
+Docker/DevContainer を自動判別し、最適な実行環境を選択：
 
 ```bash
-# アプリケーション起動
-make up
+# 開発コマンド（Docker環境・DevContainer両対応）
+make help         # コマンド一覧表示
+make up           # Docker環境起動
+make down         # Docker環境停止
+make install      # Composer依存関係インストール
+make test         # PHPUnit実行（42テスト）
+make phpstan      # 静的解析実行（レベル8）
+make format       # コード整形（PHP-CS-Fixer）
+make format-check # 整形差分確認（dry-run）
+make qa           # 品質チェック（phpstan + test）
+make php-shell    # PHPコンテナシェル接続
+make logs         # アプリケーションログ表示
+make status       # コンテナ状態・環境変数確認
+```
 
-# アプリケーション停止
-make down
+### Composer スクリプト
 
-# アプリケーション停止（ボリューム削除）
-make down-volume
+```bash
+# アプリ内（app/ ディレクトリ）でも実行可能
+cd app
+composer test           # PHPUnit
+composer phpstan        # 静的解析
+composer format         # コード整形
+composer format-check   # 整形チェック
+composer start          # 組み込みサーバー起動（開発用）
+```
 
-# Composer依存関係のインストール
-make install
+### 実行方法詳細
 
+#### Docker Composeを直接使用
+
+```bash
 # テスト実行
-make test
+docker compose exec php ./vendor/bin/phpunit
 
-# PHPStan静的解析
-make phpstan
+# 静的解析
+docker compose exec php ./vendor/bin/phpstan analyse --no-progress
 
-# PHPコンテナに入る
-make php-shell
+# コード整形
+docker compose exec php ./vendor/bin/php-cs-fixer fix
 
-# ログ表示
-make logs
+# 特定テストファイル実行
+docker compose exec php ./vendor/bin/phpunit tests/Controllers/FormControllerTest.php
 
-# 状態確認
-make status
+# 詳細出力 + カバレッジ
+docker compose exec php ./vendor/bin/phpunit --verbose --coverage-text
 ```
 
-#### 2. Docker Composeを直接使用
+#### DevContainer/ローカル実行
 
 ```bash
-# 基本サービスでテスト実行
-docker compose exec php vendor/bin/phpunit
+cd app
 
-# データベースも含めてテスト実行（複数ファイル指定）
-docker compose -f compose.yml -f compose.database.yml exec php vendor/bin/phpunit
+# 直接実行（DevContainer内）
+./vendor/bin/phpunit
+./vendor/bin/phpstan analyse --no-progress
+./vendor/bin/php-cs-fixer fix
 
-# 詳細出力
-docker compose exec php vendor/bin/phpunit --verbose
-
-# 特定のテストファイルを実行
-docker compose exec php vendor/bin/phpunit tests/Controllers/FormControllerTest.php
-
-# テストカバレッジ
-docker compose exec php vendor/bin/phpunit --coverage-text
+# または Composer経由
+composer test
+composer phpstan
+composer format
 ```
 
-#### 3. PHPコンテナ内でテスト実行
+## テスト & 品質保証
 
-```bash
-# PHPコンテナに入る
-make php-shell
-# または
-docker compose exec php bash
-
-# コンテナ内でテスト実行
-vendor/bin/phpunit
-```
-
-### テスト構成
+### テストスイート構成（42テスト）
 
 ```
 tests/
-├── BaseTestCase.php                    # テストベースクラス
+├── BaseTestCase.php                    # 共通テスト基盤（Slim App + CSRF自動付与）
 ├── Controllers/
-│   └── FormControllerTest.php         # コントローラーテスト
-├── IntegrationTest.php                # 統合テスト
-├── RoutesTest.php                     # ルートテスト
-└── Validators/
-    └── ContactFormValidatorTest.php   # バリデーションテスト
+│   └── FormControllerTest.php         # コントローラー単体テスト（各アクション）
+├── Validators/
+│   └── ContactFormValidatorTest.php   # バリデーション単体テスト（境界値・エラーケース）
+├── Middleware/
+│   └── CsrfMiddlewareTest.php         # CSRF保護テスト（正常・失敗）
+├── IntegrationTest.php                # エンドツーエンド統合テスト（全フロー）
+└── RoutesTest.php                     # ルート存在確認・パラメータテスト
 ```
 
-### テストの種類
+### 品質ゲート
 
-- **コントローラーテスト**: 各エンドポイントの動作確認
-- **バリデーションテスト**: フォームバリデーションの確認
-- **統合テスト**: フォーム送信フロー全体のテスト
-- **ルートテスト**: すべてのルートの存在確認
+**静的解析**: PHPStan レベル8（型安全性・未定義変数・デッドコード検出）  
+**コードスタイル**: PHP-CS-Fixer（PSR-2/12 + カスタムルール）  
+**テスト**: PHPUnit 11.5（100% パス必須）  
+**CSRF保護**: 全POST/PUT/PATCHルートでトークン検証
 
 ## 開発
 
@@ -327,26 +363,53 @@ docker compose exec php composer install
 docker compose exec php composer require パッケージ名
 ```
 
+## ログ・デバッグ
+
+### ログ出力
+
+Monolog による3チャンネル構造化ログ（`app/logs/` ディレクトリ）：
+
+- **app.log**: 一般アプリケーションログ（DEBUG レベル）
+- **security.log**: セキュリティ関連ログ（CSRF失敗、認証エラー等）
+- **mail.log**: メール送信ログ（将来の機能拡張用）
+
+各ログエントリには `request_id` が自動付与され、リクエスト単位でのトレースが可能。
+
+### デバッグ
+
+**VS Code DevContainer**: Xdebug 設定済み（ポート9003）  
+**ログレベル制御**: 設定ファイル (`config/config.php`) の `debug` フラグで制御  
+**エラー詳細**: development環境では詳細エラー表示、productionでは隠蔽
+
 ### ログの確認
 
 ```bash
-# PHP-FPMログ
-docker compose logs php
+# アプリケーションログ（推奨）
+make logs
 
-# Nginxログ
-docker compose logs web
+# または Docker Compose直接
+docker compose logs -f php
 
-# MySQLログ
-docker compose logs mysql
+# ファイル直接確認
+tail -f app/logs/app.log
+tail -f app/logs/security.log
+tail -f app/logs/mail.log
+
+# 他のサービスログ
+docker compose logs web      # Nginx
+docker compose logs mysql    # MySQL（database設定時）
 ```
 
-### コンテナに入る
+### コンテナシェル接続
 
 ```bash
-# PHPコンテナ
+# PHPコンテナ（推奨）
+make php-shell
+
+# 手動接続
 docker compose exec php bash
 
-# MySQLコンテナ
+# MySQLコンテナ（database設定時）
 docker compose exec mysql mysql -u slim_user -p slim_app
 ```
 
@@ -360,12 +423,30 @@ docker compose down
 docker compose -f compose.yml -f compose.database.yml down
 ```
 
-## 完全削除（ボリュームも含む）
+## 今後の拡張
 
-```bash
-# 基本サービス
-docker compose down -v
+詳細な改善ロードマップは [TASK.md](TASK.md) を参照してください。
 
-# 複数ファイルの場合
-docker compose -f compose.yml -f compose.database.yml down -v
-```
+### 優先度P0（セキュリティ・安定性）
+- X-Request-Id レスポンスヘッダ付与
+- セキュリティヘッダ追加（X-Frame-Options等）  
+- バリデーション失敗ログ
+- Rate Limiting（簡易）
+
+### 優先度P1（アーキテクチャ・品質）
+- Provider分割（ViewProvider、ErrorHandlerProvider等）
+- Config クラス化
+- GitHub Actions CI
+- Coverage レポート
+
+### 優先度P2（機能拡張）
+- .env サポート（vlucas/phpdotenv）
+- メール送信機能（Mailpit連携）
+- 多言語化基盤
+- Health Check エンドポイント
+
+---
+
+## ライセンス
+
+MIT License
