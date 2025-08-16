@@ -1,5 +1,5 @@
 # Makefileでテスト実行を簡単に（Docker/DevContainer 両対応）
-.PHONY: help up down down-volume install test phpstan php-shell logs status qa format format-check
+.PHONY: help up down down-volume install test phpstan php-shell logs status qa format format-check migrate migrate-rollback migrate-status migrate-create
 
 # 設定
 APP_DIR := app
@@ -19,6 +19,10 @@ help:
 	@echo "  make phpstan    - PHPStan静的解析を実行 (自動でDocker/ローカル切替)"
 	@echo "  make format     - PHP-CS-Fixerでコード整形 (自動でDocker/ローカル切替)"
 	@echo "  make format-check - PHP-CS-Fixerでコード整形チェック (自動でDocker/ローカル切替)"
+	@echo "  make migrate    - Phinxマイグレーション実行 (自動でDocker/ローカル切替)"
+	@echo "  make migrate-rollback - Phinxマイグレーションロールバック (自動でDocker/ローカル切替)"
+	@echo "  make migrate-status - Phinxマイグレーション状況確認 (自動でDocker/ローカル切替)"
+	@echo "  make migrate-create - Phinxマイグレーション作成 (自動でDocker/ローカル切替)"
 	@echo "  make php-shell  - PHPコンテナに入る (Docker)"
 	@echo "  make logs       - ログを表示 (Docker)"
 	@echo "  make status     - 現在の状態を確認 (Docker)"
@@ -77,6 +81,40 @@ ifeq ($(USE_DOCKER),1)
 	docker compose exec $(PHP_SERVICE) ./vendor/bin/php-cs-fixer fix --dry-run --diff
 else
 	cd $(APP_DIR) && ./vendor/bin/php-cs-fixer fix --dry-run --diff
+endif
+
+# マイグレーション実行
+migrate:
+ifeq ($(USE_DOCKER),1)
+	docker compose exec $(PHP_SERVICE) ./vendor/bin/phinx migrate
+else
+	cd $(APP_DIR) && ./vendor/bin/phinx migrate
+endif
+
+# マイグレーションロールバック
+migrate-rollback:
+ifeq ($(USE_DOCKER),1)
+	docker compose exec $(PHP_SERVICE) ./vendor/bin/phinx rollback
+else
+	cd $(APP_DIR) && ./vendor/bin/phinx rollback
+endif
+
+# マイグレーション状況確認
+migrate-status:
+ifeq ($(USE_DOCKER),1)
+	docker compose exec $(PHP_SERVICE) ./vendor/bin/phinx status
+else
+	cd $(APP_DIR) && ./vendor/bin/phinx status
+endif
+
+# マイグレーション作成
+migrate-create:
+ifeq ($(USE_DOCKER),1)
+	@read -p "Migration name: " name; \
+	docker compose exec $(PHP_SERVICE) ./vendor/bin/phinx create $$name
+else
+	@read -p "Migration name: " name; \
+	cd $(APP_DIR) && ./vendor/bin/phinx create $$name
 endif
 
 # PHPコンテナに入る

@@ -17,7 +17,8 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.64",
         "phpstan/phpstan": "^2.0",
-        "phpunit/phpunit": "^11.4"
+        "phpunit/phpunit": "^11.4",
+        "robmorgan/phinx": "^0.16"
     },
     "autoload": {
         "psr-4": {
@@ -35,7 +36,11 @@
         "phpstan": "phpstan analyse --memory-limit=256M",
         "phpstan-baseline": "phpstan analyse --generate-baseline",
         "format": "php-cs-fixer fix",
-        "format-check": "php-cs-fixer fix --dry-run --diff"
+        "format-check": "php-cs-fixer fix --dry-run --diff",
+        "migrate": "phinx migrate",
+        "migrate:rollback": "phinx rollback",
+        "migrate:status": "phinx status",
+        "migrate:create": "phinx create"
     },
     "config": {
         "process-timeout": 0,
