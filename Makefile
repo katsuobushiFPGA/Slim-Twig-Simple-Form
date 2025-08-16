@@ -1,5 +1,5 @@
 # Makefileでテスト実行を簡単に（Docker/DevContainer 両対応）
-.PHONY: help up down down-volume install test phpstan php-shell logs status qa
+.PHONY: help up down down-volume install test phpstan php-shell logs status qa format format-check
 
 # 設定
 APP_DIR := app
@@ -17,6 +17,8 @@ help:
 	@echo "  make install    - Composer依存関係をインストール (Dockerが無い場合はローカル)"
 	@echo "  make test       - PHPUnitテストを実行 (自動でDocker/ローカル切替)"
 	@echo "  make phpstan    - PHPStan静的解析を実行 (自動でDocker/ローカル切替)"
+	@echo "  make format     - PHP-CS-Fixerでコード整形 (自動でDocker/ローカル切替)"
+	@echo "  make format-check - PHP-CS-Fixerでコード整形チェック (自動でDocker/ローカル切替)"
 	@echo "  make php-shell  - PHPコンテナに入る (Docker)"
 	@echo "  make logs       - ログを表示 (Docker)"
 	@echo "  make status     - 現在の状態を確認 (Docker)"
@@ -60,6 +62,22 @@ endif
 
 # まとめて品質チェック
 qa: phpstan test
+
+# コード整形
+format:
+ifeq ($(USE_DOCKER),1)
+	docker compose exec $(PHP_SERVICE) ./vendor/bin/php-cs-fixer fix
+else
+	cd $(APP_DIR) && ./vendor/bin/php-cs-fixer fix
+endif
+
+# コード整形チェック (dry-run)
+format-check:
+ifeq ($(USE_DOCKER),1)
+	docker compose exec $(PHP_SERVICE) ./vendor/bin/php-cs-fixer fix --dry-run --diff
+else
+	cd $(APP_DIR) && ./vendor/bin/php-cs-fixer fix --dry-run --diff
+endif
 
 # PHPコンテナに入る
 php-shell:
