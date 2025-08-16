@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Controllers\ControllerProvider;
 use App\Database\DatabaseProvider;
 use App\Error\GeneralErrorRenderer;
 use App\Error\HttpErrorRenderer;
@@ -39,6 +40,9 @@ return (function (): App {
 
     // リポジトリ設定
     RepositoryProvider::register($container);
+
+    // コントローラー設定
+    ControllerProvider::register($container);
     $app->add(new RequestContextMiddleware());
 
     // CSRF Guard 設定（失敗時セキュリティログ）

@@ -12,6 +12,11 @@
                 お問い合わせを受け付けました。<br>
                 内容を確認の上、3営業日以内にご連絡いたします。
             </p>
+            {% if contact_id %}
+            <p style="color: #999; font-size: 14px; margin-bottom: 10px;">
+                お問い合わせ番号: <strong>#{{ contact_id }}</strong>
+            </p>
+            {% endif %}
         </div>
         
         {% if data %}
