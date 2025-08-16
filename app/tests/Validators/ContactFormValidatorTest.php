@@ -1,8 +1,11 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Tests\Validators;
 
-use PHPUnit\Framework\TestCase;
 use App\Validators\ContactFormValidator;
+use PHPUnit\Framework\TestCase;
 
 class ContactFormValidatorTest extends TestCase
 {
@@ -19,11 +22,11 @@ class ContactFormValidatorTest extends TestCase
         $data = [
             'name' => 'テスト太郎',
             'email' => 'test@example.com',
-            'message' => 'これは有効なテストメッセージです。'
+            'message' => 'これは有効なテストメッセージです。',
         ];
-        
+
         $errors = $this->validator->validate($data);
-        
+
         $this->assertEmpty($errors);
     }
 
@@ -32,11 +35,11 @@ class ContactFormValidatorTest extends TestCase
         $data = [
             'name' => '',
             'email' => 'test@example.com',
-            'message' => 'テストメッセージです。'
+            'message' => 'テストメッセージです。',
         ];
-        
+
         $errors = $this->validator->validate($data);
-        
+
         $this->assertContains('お名前を入力してください。', $errors);
     }
 
@@ -45,11 +48,11 @@ class ContactFormValidatorTest extends TestCase
         $data = [
             'name' => str_repeat('あ', 51), // 51文字
             'email' => 'test@example.com',
-            'message' => 'テストメッセージです。'
+            'message' => 'テストメッセージです。',
         ];
-        
+
         $errors = $this->validator->validate($data);
-        
+
         $this->assertContains('お名前は50文字以内で入力してください。', $errors);
     }
 
@@ -58,11 +61,11 @@ class ContactFormValidatorTest extends TestCase
         $data = [
             'name' => 'テスト太郎',
             'email' => '',
-            'message' => 'テストメッセージです。'
+            'message' => 'テストメッセージです。',
         ];
-        
+
         $errors = $this->validator->validate($data);
-        
+
         $this->assertContains('メールアドレスを入力してください。', $errors);
     }
 
@@ -71,11 +74,11 @@ class ContactFormValidatorTest extends TestCase
         $data = [
             'name' => 'テスト太郎',
             'email' => 'invalid-email',
-            'message' => 'テストメッセージです。'
+            'message' => 'テストメッセージです。',
         ];
-        
+
         $errors = $this->validator->validate($data);
-        
+
         $this->assertContains('正しいメールアドレスを入力してください。', $errors);
     }
 
@@ -86,14 +89,14 @@ class ContactFormValidatorTest extends TestCase
         $data = [
             'name' => 'テスト太郎',
             'email' => $longEmail,
-            'message' => 'テストメッセージです。'
+            'message' => 'テストメッセージです。',
         ];
-        
+
         $errors = $this->validator->validate($data);
-        
+
         // デバッグ用
         $this->assertNotEmpty($errors, 'エラーが発生していません。実際のエラー: ' . implode(', ', $errors));
-        
+
         // 無効なメールアドレスエラーまたは長さエラーのいずれかが発生することを確認
         $hasEmailError = false;
         foreach ($errors as $error) {
@@ -102,7 +105,7 @@ class ContactFormValidatorTest extends TestCase
                 break;
             }
         }
-        
+
         $this->assertTrue($hasEmailError, 'メールアドレス関連のエラーが発生していません。実際のエラー: ' . implode(', ', $errors));
     }
 
@@ -111,11 +114,11 @@ class ContactFormValidatorTest extends TestCase
         $data = [
             'name' => 'テスト太郎',
             'email' => 'test@example.com',
-            'message' => ''
+            'message' => '',
         ];
-        
+
         $errors = $this->validator->validate($data);
-        
+
         $this->assertContains('お問い合わせ内容を入力してください。', $errors);
     }
 
@@ -124,11 +127,11 @@ class ContactFormValidatorTest extends TestCase
         $data = [
             'name' => 'テスト太郎',
             'email' => 'test@example.com',
-            'message' => '短い' // 9文字以下
+            'message' => '短い', // 9文字以下
         ];
-        
+
         $errors = $this->validator->validate($data);
-        
+
         $this->assertContains('お問い合わせ内容は10文字以上で入力してください。', $errors);
     }
 
@@ -137,11 +140,11 @@ class ContactFormValidatorTest extends TestCase
         $data = [
             'name' => 'テスト太郎',
             'email' => 'test@example.com',
-            'message' => str_repeat('あ', 1001) // 1000文字超過
+            'message' => str_repeat('あ', 1001), // 1000文字超過
         ];
-        
+
         $errors = $this->validator->validate($data);
-        
+
         $this->assertContains('お問い合わせ内容は1000文字以内で入力してください。', $errors);
     }
 
@@ -150,11 +153,11 @@ class ContactFormValidatorTest extends TestCase
         $data = [
             'name' => '',
             'email' => 'invalid-email',
-            'message' => ''
+            'message' => '',
         ];
-        
+
         $errors = $this->validator->validate($data);
-        
+
         $this->assertContains('お名前を入力してください。', $errors);
         $this->assertContains('正しいメールアドレスを入力してください。', $errors);
         $this->assertContains('お問い合わせ内容を入力してください。', $errors);
@@ -166,11 +169,11 @@ class ContactFormValidatorTest extends TestCase
         $data = [
             'name' => '  テスト太郎  ',
             'email' => '  test@example.com  ',
-            'message' => '  テストメッセージです。  '
+            'message' => '  テストメッセージです。  ',
         ];
-        
+
         $trimmedData = $this->validator->getTrimmedData($data);
-        
+
         $this->assertEquals('テスト太郎', $trimmedData['name']);
         $this->assertEquals('test@example.com', $trimmedData['email']);
         $this->assertEquals('テストメッセージです。', $trimmedData['message']);
@@ -181,11 +184,11 @@ class ContactFormValidatorTest extends TestCase
         $data = [
             'name' => '   ',
             'email' => '   ',
-            'message' => '   '
+            'message' => '   ',
         ];
-        
+
         $errors = $this->validator->validate($data);
-        
+
         $this->assertContains('お名前を入力してください。', $errors);
         $this->assertContains('メールアドレスを入力してください。', $errors);
         $this->assertContains('お問い合わせ内容を入力してください。', $errors);
@@ -199,16 +202,16 @@ class ContactFormValidatorTest extends TestCase
         $data = [
             'name' => 'テスト太郎',
             'email' => $email,
-            'message' => 'テストメッセージです。'
+            'message' => 'テストメッセージです。',
         ];
-        
+
         $errors = $this->validator->validate($data);
-        
+
         // メールアドレス関連のエラーが含まれていないことを確認
-        $emailErrors = array_filter($errors, function($error) {
+        $emailErrors = array_filter($errors, function ($error) {
             return strpos($error, 'メールアドレス') !== false;
         });
-        
+
         $this->assertEmpty($emailErrors);
     }
 

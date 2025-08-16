@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ServerRequestInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
+use Slim\Csrf\Guard;
 use Slim\Factory\AppFactory;
 use Slim\Psr7\Factory\ServerRequestFactory;
-use Psr\Container\ContainerInterface;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
-use Slim\Csrf\Guard;
 
 abstract class BaseTestCase extends TestCase
 {
@@ -52,6 +52,7 @@ abstract class BaseTestCase extends TestCase
         $this->csrfGuard->setFailureHandler(function ($request, $handler) {
             $response = $this->app->getResponseFactory()->createResponse(400);
             $response->getBody()->write('CSRF validation failed');
+
             return $response;
         });
 
@@ -71,8 +72,8 @@ abstract class BaseTestCase extends TestCase
     }
 
     /**
-     * リクエストを作成するヘルパーメソッド
-     * 
+     * リクエストを作成するヘルパーメソッド.
+     *
      * @param array<string, mixed> $data
      */
     protected function createRequest(string $method, string $uri, array $data = []): ServerRequestInterface
@@ -99,7 +100,7 @@ abstract class BaseTestCase extends TestCase
     }
 
     /**
-     * アプリケーションにリクエストを送信するヘルパーメソッド
+     * アプリケーションにリクエストを送信するヘルパーメソッド.
      */
     protected function runApp(ServerRequestInterface $request): ResponseInterface
     {

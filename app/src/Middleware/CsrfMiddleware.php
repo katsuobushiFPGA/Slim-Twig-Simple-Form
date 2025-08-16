@@ -13,13 +13,14 @@ use Slim\Psr7\Response;
 
 /**
  * CSRFミドルウェア
- * フォーム送信に対するCSRF攻撃を防止します
+ * フォーム送信に対するCSRF攻撃を防止します.
  */
 class CsrfMiddleware implements MiddlewareInterface
 {
     public function __construct(
         private Guard $csrfGuard
-    ) {}
+    ) {
+    }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -30,7 +31,7 @@ class CsrfMiddleware implements MiddlewareInterface
             $response = new Response();
             $payload = json_encode([
                 'error' => 'CSRF token validation failed',
-                'message' => 'セキュリティトークンが無効です。ページを再読み込みしてから再試行してください。'
+                'message' => 'セキュリティトークンが無効です。ページを再読み込みしてから再試行してください。',
             ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             if ($payload === false) {
                 $payload = '{"error":"CSRF token validation failed"}';

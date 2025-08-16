@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Tests\Controllers;
 
 use Tests\BaseTestCase;
@@ -9,9 +12,9 @@ class FormControllerTest extends BaseTestCase
     {
         $request = $this->createRequest('GET', '/');
         $response = $this->runApp($request);
-        
+
         $this->assertEquals(200, $response->getStatusCode());
-        
+
         $body = (string) $response->getBody();
         $this->assertStringContainsString('お問い合わせフォーム - Slim 4 + Twig', $body);
         $this->assertStringContainsString('Welcome to Slim Framework with Twig!', $body);
@@ -22,9 +25,9 @@ class FormControllerTest extends BaseTestCase
     {
         $request = $this->createRequest('GET', '/form/input');
         $response = $this->runApp($request);
-        
+
         $this->assertEquals(200, $response->getStatusCode());
-        
+
         $body = (string) $response->getBody();
         $this->assertStringContainsString('お問い合わせ入力', $body);
         $this->assertStringContainsString('ステップ 1/3', $body);
@@ -39,14 +42,14 @@ class FormControllerTest extends BaseTestCase
         $data = [
             'name' => 'テスト太郎',
             'email' => 'test@example.com',
-            'message' => 'これはテストメッセージです。'
+            'message' => 'これはテストメッセージです。',
         ];
-        
+
         $request = $this->createRequest('POST', '/form/input', $data);
         $response = $this->runApp($request);
-        
+
         $this->assertEquals(200, $response->getStatusCode());
-        
+
         $body = (string) $response->getBody();
         $this->assertStringContainsString('テスト太郎', $body);
         $this->assertStringContainsString('test@example.com', $body);
@@ -58,14 +61,14 @@ class FormControllerTest extends BaseTestCase
         $data = [
             'name' => 'テスト太郎',
             'email' => 'test@example.com',
-            'message' => 'これはテストメッセージです。'
+            'message' => 'これはテストメッセージです。',
         ];
-        
+
         $request = $this->createRequest('POST', '/form/confirm', $data);
         $response = $this->runApp($request);
-        
+
         $this->assertEquals(200, $response->getStatusCode());
-        
+
         $body = (string) $response->getBody();
         $this->assertStringContainsString('お問い合わせ確認', $body);
         $this->assertStringContainsString('ステップ 2/3', $body);
@@ -81,14 +84,14 @@ class FormControllerTest extends BaseTestCase
         $data = [
             'name' => '',
             'email' => 'test@example.com',
-            'message' => 'これはテストメッセージです。'
+            'message' => 'これはテストメッセージです。',
         ];
-        
+
         $request = $this->createRequest('POST', '/form/confirm', $data);
         $response = $this->runApp($request);
-        
+
         $this->assertEquals(200, $response->getStatusCode());
-        
+
         $body = (string) $response->getBody();
         // バリデーションエラーで入力画面に戻る
         $this->assertStringContainsString('お問い合わせ入力', $body);
@@ -101,14 +104,14 @@ class FormControllerTest extends BaseTestCase
         $data = [
             'name' => 'テスト太郎',
             'email' => '',
-            'message' => 'これはテストメッセージです。'
+            'message' => 'これはテストメッセージです。',
         ];
-        
+
         $request = $this->createRequest('POST', '/form/confirm', $data);
         $response = $this->runApp($request);
-        
+
         $this->assertEquals(200, $response->getStatusCode());
-        
+
         $body = (string) $response->getBody();
         $this->assertStringContainsString('入力エラー', $body);
         $this->assertStringContainsString('メールアドレスを入力してください。', $body);
@@ -119,14 +122,14 @@ class FormControllerTest extends BaseTestCase
         $data = [
             'name' => 'テスト太郎',
             'email' => 'test@example.com',
-            'message' => ''
+            'message' => '',
         ];
-        
+
         $request = $this->createRequest('POST', '/form/confirm', $data);
         $response = $this->runApp($request);
-        
+
         $this->assertEquals(200, $response->getStatusCode());
-        
+
         $body = (string) $response->getBody();
         $this->assertStringContainsString('入力エラー', $body);
         $this->assertStringContainsString('お問い合わせ内容を入力してください。', $body);
@@ -137,14 +140,14 @@ class FormControllerTest extends BaseTestCase
         $data = [
             'name' => '',
             'email' => '',
-            'message' => ''
+            'message' => '',
         ];
-        
+
         $request = $this->createRequest('POST', '/form/confirm', $data);
         $response = $this->runApp($request);
-        
+
         $this->assertEquals(200, $response->getStatusCode());
-        
+
         $body = (string) $response->getBody();
         $this->assertStringContainsString('入力エラー', $body);
         $this->assertStringContainsString('お名前を入力してください。', $body);
@@ -157,14 +160,14 @@ class FormControllerTest extends BaseTestCase
         $data = [
             'name' => 'テスト太郎',
             'email' => 'test@example.com',
-            'message' => 'これはテストメッセージです。'
+            'message' => 'これはテストメッセージです。',
         ];
-        
+
         $request = $this->createRequest('POST', '/form/complete', $data);
         $response = $this->runApp($request);
-        
+
         $this->assertEquals(200, $response->getStatusCode());
-        
+
         $body = (string) $response->getBody();
         $this->assertStringContainsString('お問い合わせ完了', $body);
         $this->assertStringContainsString('ステップ 3/3', $body);
@@ -180,7 +183,7 @@ class FormControllerTest extends BaseTestCase
     {
         $request = $this->createRequest('GET', '/form/complete');
         $response = $this->runApp($request);
-        
+
         // GETアクセスの場合は302リダイレクト
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertEquals('/form/input', $response->getHeaderLine('Location'));
@@ -189,7 +192,7 @@ class FormControllerTest extends BaseTestCase
     public function testNonExistentRoute(): void
     {
         $request = $this->createRequest('GET', '/nonexistent');
-        
+
         // 404エラーが発生することを期待
         $this->expectException(\Slim\Exception\HttpNotFoundException::class);
         $response = $this->runApp($request);

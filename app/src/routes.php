@@ -1,6 +1,8 @@
 <?php
-use Slim\App;
+
+declare(strict_types=1);
 use App\Controllers\FormController;
+use Slim\App;
 
 return function (App $app) {
     $app->get('/', [FormController::class, 'index']);

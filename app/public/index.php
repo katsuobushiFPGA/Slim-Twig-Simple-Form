@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 // セッション開始（CSRF保護）
 session_start();
 require __DIR__ . '/../vendor/autoload.php';

@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace App\Error;
 
-use Slim\Exception\HttpException;
-use Slim\Views\Twig;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\HttpException;
 use Slim\Psr7\Response as Psr7Response;
+use Slim\Views\Twig;
 
 class HttpErrorRenderer
 {
-    public function __construct(private Twig $twig, private bool $displayErrorDetails = false) {}
+    public function __construct(private Twig $twig, private bool $displayErrorDetails = false)
+    {
+    }
 
     /**
      * @param list<string> $details
@@ -20,11 +22,12 @@ class HttpErrorRenderer
     private function render(Response $response, int $status, string $title, string $message, array $details = [], bool $json = false): Response
     {
         $tpl = $json ? 'error/error.json.twig' : 'error/error.html.twig';
+
         return $this->twig->render($response->withStatus($status), $tpl, [
             'status_code' => $status,
             'status_text' => $title,
             'message' => $message,
-            'details' => $details
+            'details' => $details,
         ]);
     }
 

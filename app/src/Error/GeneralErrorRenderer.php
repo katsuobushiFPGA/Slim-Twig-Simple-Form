@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace App\Error;
 
-use Throwable;
-use Slim\Views\Twig;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Psr7\Response as Psr7Response;
+use Slim\Views\Twig;
+use Throwable;
 
 class GeneralErrorRenderer
 {
-    public function __construct(private Twig $twig, private bool $displayErrorDetails = false) {}
+    public function __construct(private Twig $twig, private bool $displayErrorDetails = false)
+    {
+    }
 
     /**
      * @param list<string> $details
@@ -20,11 +22,12 @@ class GeneralErrorRenderer
     private function render(Response $response, int $status, string $title, string $message, array $details = [], bool $json = false): Response
     {
         $tpl = $json ? 'error/error.json.twig' : 'error/error.html.twig';
+
         return $this->twig->render($response->withStatus($status), $tpl, [
             'status_code' => $status,
             'status_text' => $title,
             'message' => $message,
-            'details' => $details
+            'details' => $details,
         ]);
     }
 
@@ -41,6 +44,7 @@ class GeneralErrorRenderer
             $details[] = $exception->getFile() . ':' . $exception->getLine();
         }
         $response = new Psr7Response();
+
         return $this->render($response, $status, $title, $message, $details, $wantsJson);
     }
 }

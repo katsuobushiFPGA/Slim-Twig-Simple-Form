@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Validators\ContactFormValidator;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
-use App\Validators\ContactFormValidator;
 
 class FormController
 {
     /**
-     * CSRFトークンをリクエストデータから除去する
+     * CSRFトークンをリクエストデータから除去する.
      *
      * @param mixed $data リクエストデータ（配列でない場合は空配列として扱う）
      * @return array<string,mixed> CSRFトークンを除去したデータ
@@ -23,23 +23,25 @@ class FormController
             return [];
         }
         unset($data['csrf_name'], $data['csrf_value']);
+
         return $data;
     }
 
     /**
-     * ホームページの表示
+     * ホームページの表示.
      */
     public function index(Request $request, Response $response): Response
     {
         $view = Twig::fromRequest($request);
+
         return $view->render($response, 'index.html.twig', [
             'title' => 'お問い合わせフォーム - Slim 4 + Twig',
-            'message' => 'Welcome to Slim Framework with Twig!'
+            'message' => 'Welcome to Slim Framework with Twig!',
         ]);
     }
 
     /**
-     * フォーム入力画面の表示
+     * フォーム入力画面の表示.
      */
     public function input(Request $request, Response $response): Response
     {
@@ -62,12 +64,12 @@ class FormController
             'csrf' => [
                 'tokenName' => $tokenName,
                 'tokenValue' => $tokenValue,
-            ]
+            ],
         ]);
     }
 
     /**
-     * フォーム確認画面の表示・バリデーション処理
+     * フォーム確認画面の表示・バリデーション処理.
      */
     public function confirm(Request $request, Response $response): Response
     {
@@ -101,7 +103,7 @@ class FormController
                 'csrf' => [
                     'tokenName' => $tokenName,
                     'tokenValue' => $tokenValue,
-                ]
+                ],
             ]);
         }
 
@@ -111,12 +113,12 @@ class FormController
             'csrf' => [
                 'tokenName' => $tokenName,
                 'tokenValue' => $tokenValue,
-            ]
+            ],
         ]);
     }
 
     /**
-     * フォーム送信完了処理
+     * フォーム送信完了処理.
      */
     public function complete(Request $request, Response $response): Response
     {
@@ -131,7 +133,7 @@ class FormController
 
             return $view->render($response, 'form/complete.html.twig', [
                 'title' => 'お問い合わせ完了 - お問い合わせフォーム',
-                'data' => $data
+                'data' => $data,
             ]);
         } else {
             // GETアクセスの場合はフォーム入力ページにリダイレクト

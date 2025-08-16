@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Middleware;
 
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
 class RequestContextMiddleware implements MiddlewareInterface
 {
@@ -21,6 +21,7 @@ class RequestContextMiddleware implements MiddlewareInterface
         }
         $requestId = \bin2hex($bytes);
         $request = $request->withAttribute('request_id', $requestId);
+
         return $handler->handle($request);
     }
 }

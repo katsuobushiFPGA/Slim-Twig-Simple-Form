@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
+use App\Error\GeneralErrorRenderer;
+use App\Error\HttpErrorRenderer;
+use App\Logging\LoggerProvider;
+use App\Middleware\RequestContextMiddleware;
 use DI\Container;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\App;
+use Slim\Csrf\Guard;
 use Slim\Factory\AppFactory;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
-use Slim\Csrf\Guard;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use App\Logging\LoggerProvider;
-use App\Middleware\RequestContextMiddleware;
-use App\Error\HttpErrorRenderer;
-use App\Error\GeneralErrorRenderer;
 
-/**
+/*
  * アプリケーション初期化（コンテナ / ルート / ミドルウェア / エラーハンドラ）
  * public/index.php から require され Slim\App を返す。
  */
@@ -40,11 +40,12 @@ return (function (): App {
             'request_id' => $request->getAttribute('request_id'),
             'ip' => $request->getServerParams()['REMOTE_ADDR'] ?? null,
             'ua' => $request->getHeaderLine('User-Agent'),
-            'path' => (string)$request->getUri(),
+            'path' => (string) $request->getUri(),
         ];
         $securityLogger->warning('CSRF token validation failed', $context);
         $response = $app->getResponseFactory()->createResponse(400);
         $response->getBody()->write('CSRF validation failed');
+
         return $response->withHeader('Content-Type', 'text/plain');
     });
 

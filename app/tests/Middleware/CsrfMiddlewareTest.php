@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Middleware;
 
 use Tests\BaseTestCase;
-use Slim\Csrf\Guard;
 
 class CsrfMiddlewareTest extends BaseTestCase
 {
@@ -16,7 +15,7 @@ class CsrfMiddlewareTest extends BaseTestCase
         $request = $request->withParsedBody([
             'name' => 'テストユーザー',
             'email' => 'test@example.com',
-            'message' => 'テストメッセージ'
+            'message' => 'テストメッセージ',
         ]);
 
         $response = $this->app->handle($request);
