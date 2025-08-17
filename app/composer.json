@@ -34,14 +34,19 @@
     "scripts": {
         "start": "php -S localhost:8080 -t public",
         "test": "phpunit",
+        "test:coverage": "phpunit --coverage-text --coverage-clover=coverage.xml",
         "phpstan": "phpstan analyse --memory-limit=256M",
+        "phpstan:ci": "phpstan analyse --memory-limit=256M --error-format=github",
         "phpstan-baseline": "phpstan analyse --generate-baseline",
         "format": "php-cs-fixer fix",
         "format-check": "php-cs-fixer fix --dry-run --diff",
         "migrate": "phinx migrate",
         "migrate:rollback": "phinx rollback",
         "migrate:status": "phinx status",
-        "migrate:create": "phinx create"
+        "migrate:create": "phinx create",
+        "migrate:testing": "phinx migrate -e testing",
+        "ci": "composer migrate:testing && composer test:coverage && composer phpstan:ci",
+        "qa": "composer phpstan && composer test"
     },
     "config": {
         "process-timeout": 0,

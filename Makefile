@@ -1,5 +1,5 @@
 # Makefileでテスト実行を簡単に（Docker/DevContainer 両対応）
-.PHONY: help up down down-volume install test phpstan php-shell logs status qa format format-check migrate migrate-rollback migrate-status migrate-create
+.PHONY: help up down down-volume install test phpstan php-shell logs status qa format format-check migrate migrate-rollback migrate-status migrate-create ci ci-test ci-migrate
 
 # 設定
 APP_DIR := app
@@ -27,6 +27,9 @@ help:
 	@echo "  make logs       - ログを表示 (Docker)"
 	@echo "  make status     - 現在の状態を確認 (Docker)"
 	@echo "  make qa         - phpstan + phpunit をまとめて実行"
+	@echo "  make ci         - CI環境用：マイグレーション + テスト + 静的解析"
+	@echo "  make ci-test    - CI環境用：テスト実行（カバレッジ付き）"
+	@echo "  make ci-migrate - CI環境用：マイグレーション実行"
 
 # アプリケーション起動
 up:
@@ -143,3 +146,14 @@ endif
 	@echo ""
 	@echo "=== 環境変数 ==="
 	@grep -E "(APP_ENV|INSTALL_DEV_DEPS|COMPOSE_FILE)" .env || echo "環境変数が設定されていません"
+
+# CI環境用：フル実行 (migrate + test + phpstan)
+ci: ci-migrate ci-test phpstan
+
+# CI環境用：マイグレーション実行
+ci-migrate:
+	cd $(APP_DIR) && ./vendor/bin/phinx migrate -e testing
+
+# CI環境用：テスト実行（カバレッジ付き）
+ci-test:
+	cd $(APP_DIR) && ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
