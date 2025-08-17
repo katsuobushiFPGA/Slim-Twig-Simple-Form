@@ -52,7 +52,7 @@
 ## P1 DX / 品質向上
 | ID | Task | 概要 | 期待結果 | Status |
 |----|------|------|----------|--------|
-| DX-001 | GitHub Actions CI | phpunit + phpstan を PR で自動実行 | 早期検知 | TODO |
+| DX-001 | GitHub Actions CI | phpunit + phpstan を PR で自動実行 | 早期検知 | DONE |
 | DX-002 | Code Style 整備 | php-cs-fixer or ECS 導入 / make format | コード一貫性 | DONE |
 | DX-003 | phpstan baseline/strict | 不要なら baseline 管理 + 追加ルール (bleedingEdge) | 静的解析強化 | TODO |
 | DX-004 | Coverage レポート | Xdebug + coverage.xml → CI artifact | テスト品質把握 | TODO |

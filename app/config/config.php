@@ -14,10 +14,10 @@ return [
         'templates' => __DIR__ . '/../templates',
     ],
     'database' => [
-        'host' => getenv('DB_HOST') ?: 'mysql',
-        'port' => (int) (getenv('DB_PORT') ?: 3306),
-        'dbname' => getenv('DB_DATABASE') ?: getenv('MYSQL_DATABASE') ?: 'slim_app',
-        'username' => getenv('DB_USERNAME') ?: getenv('MYSQL_USER') ?: 'slim_user',
+        'host' => getenv('DB_HOST') ?: getenv('MYSQL_HOST') ?: 'mysql',
+        'port' => (int) (getenv('DB_PORT') ?: getenv('MYSQL_PORT') ?: 3306),
+        'dbname' => getenv('DB_NAME') ?: getenv('DB_DATABASE') ?: getenv('MYSQL_DATABASE') ?: 'slim_app',
+        'username' => getenv('DB_USER') ?: getenv('DB_USERNAME') ?: getenv('MYSQL_USER') ?: 'slim_user',
         'password' => getenv('DB_PASSWORD') ?: getenv('MYSQL_PASSWORD') ?: 'slim_password',
         'charset' => 'utf8mb4',
         'options' => [
